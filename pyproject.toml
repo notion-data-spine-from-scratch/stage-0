@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "stage-0"
+version = "0.1.0"
+description = "Notion Stage-0 data spine prototype"
+authors = ["Shrey Patel <patel.shrey4@northeastern.edu>"]
+
+# ✨ Tell Poetry to install the `app` package from src/app
+packages = [
+  { include = "app", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.12"
+uvicorn = { extras = ["standard"], version = "^0.30.0" }
+asyncpg = "^0.29"
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.40" }
+pydantic-settings = "^2.9.1"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.4"
+black = "^24.3"
+isort = "^5.13"
+mypy = "^1.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
