@@ -5,6 +5,8 @@ services:
       POSTGRES_USER: notion
       POSTGRES_PASSWORD: notion
       POSTGRES_DB: notion
+    ports:
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ../db:/docker-entrypoint-initdb.d:ro
