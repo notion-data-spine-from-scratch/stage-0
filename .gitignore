@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+*.sqlite3
+
+# Docker
+db_data/
+*.log
+docker-compose.override.yml
+
+# IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
