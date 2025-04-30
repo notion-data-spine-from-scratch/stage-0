@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
     image: stage0-api
     environment:
-      DATABASE_URL: postgres://notion:notion@db:5432/notion
+      DATABASE_URL: postgresql+asyncpg://notion:notion@db:5432/notion
       REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"

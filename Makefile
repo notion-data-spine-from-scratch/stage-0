@@ -4,7 +4,7 @@
 COMPOSE_FILE := compose/spine-only.yml
 COMPOSE_CMD  := docker compose -f $(COMPOSE_FILE)
 
-.PHONY: up down
+.PHONY: up down seed
 
 # Build and start the spine-only stack in detached mode
 up:
@@ -13,6 +13,9 @@ up:
 # Tear down the spine-only stack
 down:
 	$(COMPOSE_CMD) down
+
+# Seed the database with test data
 seed:
-    @export DSN="postgres://notion:notion@localhost:5433/notion" && \
-    poetry run python scripts/generate_seed.py --users 20 --workspaces 3 --blocks 200000
+	@DSN="postgres://notion:notion@localhost:5433/notion" \
+	poetry run python scripts/generate_seed.py --users 20 --workspaces 3 --blocks 200000
+
