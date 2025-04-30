@@ -17,12 +17,15 @@ asyncpg = "^0.29"
 sqlalchemy = { extras = ["asyncio"], version = "^2.0.40" }
 pydantic-settings = "^2.9.1"
 fire = "^0.7.0"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.4"
 black = "^24.3"
 isort = "^5.13"
 mypy = "^1.8"
+pytest-asyncio = "^0.26.0"
+pyyaml = "^6.0.2"
 
 [build-system]
 requires = ["poetry-core"]
