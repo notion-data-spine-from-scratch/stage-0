@@ -13,4 +13,6 @@ up:
 # Tear down the spine-only stack
 down:
 	$(COMPOSE_CMD) down
-
+seed:
+    @export DSN="postgres://notion:notion@localhost:5433/notion" && \
+    poetry run python scripts/generate_seed.py --users 20 --workspaces 3 --blocks 200000
