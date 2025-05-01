@@ -1,25 +1,30 @@
 # src/app/schemas.py
 
-import uuid
 from typing import Any, Dict, Optional
+from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class BlockIn(BaseModel):
-    parent_id: Optional[uuid.UUID] = None
-    workspace_id: uuid.UUID
+    parent_id: Optional[UUID]
+    workspace_id: UUID
     type: str
     props: Dict[str, Any]
 
 
-class BlockOut(BlockIn):
-    id: uuid.UUID
+class BlockUpdate(BaseModel):
+    props: Dict[str, Any]
     version: int
 
 
-class BlockUpdate(BaseModel):
+class BlockOut(BaseModel):
+    id: UUID
+    parent_id: Optional[UUID]
+    workspace_id: UUID
+    type: str
     props: Dict[str, Any]
-    version: int = Field(
-        ..., description="Expected current version for optimistic lock"
-    )
+    version: int
+
+    # replace orm_mode = True with the new from_attributes flag
+    model_config = ConfigDict(from_attributes=True)
