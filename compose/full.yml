@@ -1,0 +1,13 @@
+# compose/full.yml
+services:
+  crdt:
+    build:
+      context: ..
+      dockerfile: Dockerfile.crdt
+    image: notion-crdt:latest
+    ports:
+      - "50051:50051"
+    depends_on:
+      - api
+      - db
+      - redis

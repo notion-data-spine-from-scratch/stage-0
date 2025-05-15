@@ -1,0 +1,11 @@
+FROM python:3.12-slim
+WORKDIR /crdt
+COPY services/notion_ot.proto services/crdt_server.py ./
+RUN pip install grpcio grpcio-tools automerge grpcio-health-checking
+RUN python -m grpc_tools.protoc \
+    --proto_path=. \
+    --python_out=. \
+    --grpc_python_out=. \
+    notion_ot.proto
+EXPOSE 50051
+CMD ["python", "crdt_server.py"]

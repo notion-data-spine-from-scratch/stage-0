@@ -1,16 +1,17 @@
-# src/app/schemas.py
-
 from typing import Any, Dict, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict  # Pydantic v2
+from pydantic import BaseModel, Field
 
 
 class BlockIn(BaseModel):
     parent_id: Optional[UUID]
     workspace_id: UUID
-    type: str
+    type_: str = Field(..., alias="type")  # JSON key "type" → python attr "type_"
     props: Dict[str, Any]
+
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class BlockUpdate(BaseModel):
@@ -18,13 +19,8 @@ class BlockUpdate(BaseModel):
     version: int
 
 
-class BlockOut(BaseModel):
+class BlockOut(BlockIn):
     id: UUID
-    parent_id: Optional[UUID]
-    workspace_id: UUID
-    type: str
-    props: Dict[str, Any]
     version: int
 
-    # replace orm_mode = True with the new from_attributes flag
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)

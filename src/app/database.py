@@ -2,22 +2,34 @@ import os
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
-# Read DATABASE_URL from env, defaulting to our Compose URL
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://notion:notion@db:5432/notion"
+# read env or fallback
+_raw_url = os.getenv(
+    "DATABASE_URL",
+    "postgresql://notion:notion@db:5432/notion",  # fallback *without* driver
 )
 
-# 1. Create the async engine
-engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
+# ensure we have +asyncpg
+if _raw_url.startswith("postgresql://"):
+    DATABASE_URL = _raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+else:
+    DATABASE_URL = _raw_url  # already has +asyncpg
 
-# 2. Create a configured "sessionmaker"
+engine: AsyncEngine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+    poolclass=NullPool,
+    future=True,
+)
+
 AsyncSessionLocal = sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
 )
 
 
-# 3. Dependency to yield a session per request
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session

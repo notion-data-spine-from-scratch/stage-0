@@ -1,15 +1,23 @@
+# src/app/models.py
 import os
 
 from sqlalchemy import MetaData, create_engine
 
-# Grab the same DATABASE_URL, but drop the "+asyncpg" suffix for a sync driver
 from app.database import DATABASE_URL
 
-SYNC_DATABASE_URL = DATABASE_URL.replace("+asyncpg", "")
+# Derive a pure‐sync URL (so we don’t invoke any asyncpg calls at import time)
+sync_url = DATABASE_URL
+if sync_url.startswith("postgresql+asyncpg://"):
+    sync_url = "postgresql://" + sync_url[len("postgresql+asyncpg://") :]
+elif sync_url.startswith("postgres://"):
+    # normalize the old postgres:// scheme
+    sync_url = "postgresql://" + sync_url[len("postgres://") :]
 
-# Create a true synchronous Engine (psycopg2 under the hood)
-sync_engine = create_engine(SYNC_DATABASE_URL, echo=False)
+# Create a synchronous engine for reflection
+sync_engine = create_engine(sync_url, future=True)
 
-# Reflect into this metadata
+# Global metadata object
 metadata = MetaData()
+
+# Reflect all tables from the existing database into metadata.tables
 metadata.reflect(bind=sync_engine)
