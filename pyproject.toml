@@ -47,6 +47,7 @@ black = "^24.3"
 isort = "^5.13"
 mypy = "^1.8"
 pyyaml = "^6.0"
+grpcio-tools = "^1.71.0"
 
 
 [tool.poetry.group.crdt.dependencies]

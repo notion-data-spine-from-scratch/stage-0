@@ -2,29 +2,31 @@ syntax = "proto3";
 
 package notion_ot;
 
-// The operational‑transformation CRDT service
+// The OT service for pushing ops and subscribing to patches.
 service NotionOT {
-  // Push a batch of local ops, get back a merged patch+version
+  // Apply a batch of operations and return a patch + new version.
   rpc PushOps (OpsRequest) returns (OpsResponse);
-  // Subscribe to a stream of patches for this block
+
+  // Subscribe to a stream of patches for a given block.
   rpc Subscribe (SubscribeRequest) returns (stream OpsResponse);
 }
 
-// Request carries client ops against a block
+// Request to push operations.
 message OpsRequest {
-  string block_id    = 1;
-  string client_id   = 2;
-  int64  base_version = 3;
+  string block_id    = 1; // UUID of the block
+  string client_id   = 2; // Who is sending
+  int64 base_version = 3; // Version the client has
+  // For simplicity we encode each operation as raw bytes (e.g. Automerge-format).
   repeated bytes ops = 4;
 }
 
-// Response carries the new version and Automerge patch
+// Response: the merged patch plus the new version.
 message OpsResponse {
-  int64 version = 1;
+  int64 version       = 1;
   repeated bytes patch = 2;
 }
 
-// SubscribeRequest opens a patch stream
+// Subscribe request: which block to watch.
 message SubscribeRequest {
   string block_id = 1;
 }
