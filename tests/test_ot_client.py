@@ -1,7 +1,7 @@
 import pytest
 
-import services.notion_ot_pb2 as pb2  # type: ignore
-import services.notion_ot_pb2_grpc as grpc_stubs  # type: ignore
+import services.notion_ot_pb2 as pb2  # type: ignore[attr-defined]
+import services.notion_ot_pb2_grpc as grpc_stubs  # type: ignore[attr-defined]
 from services.ot_client import OTClient
 
 
