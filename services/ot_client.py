@@ -1,17 +1,20 @@
 import grpc
 
-from services.notion_ot_pb2 import (  # type: ignore[attr-defined]
-    OpsRequest,
-    SubscribeRequest,
-)
-from services.notion_ot_pb2_grpc import NotionOTStub
+# relative imports inside the services package
+from .notion_ot_pb2 import OpsRequest, SubscribeRequest  # type: ignore[attr-defined]
+from .notion_ot_pb2_grpc import NotionOTStub
 
 
 class OTClient:
+    """Thin wrapper around the generated gRPC stub for NotionOT."""
+
     def __init__(self, target: str):
-        """Construct a client connected to `target`."""
+        """
+        Args:
+            target: host:port of your CRDT gRPC server
+        """
         channel = grpc.insecure_channel(target)
-        # import stub here so tests can monkey-patch it
+        # allow tests to monkey-patch NotionOTStub on import
         import services.notion_ot_pb2_grpc as grpc_stubs  # noqa: E402
 
         self._stub = grpc_stubs.NotionOTStub(channel)
@@ -24,7 +27,12 @@ class OTClient:
         base_version: int,
         ops: list[bytes],
     ) -> tuple[int, list[bytes]]:
-        """Push operations to the server, get back new version & patch."""
+        """
+        Push a batch of operations to the CRDT server.
+
+        Returns:
+            (new_version, merged_patch)
+        """
         req = OpsRequest(
             block_id=block_id,
             client_id=client_id,
@@ -35,7 +43,12 @@ class OTClient:
         return resp.version, list(resp.patch)
 
     def subscribe(self, block_id: str):
-        """Subscribe to a stream of patches for a given block."""
+        """
+        Subscribe to a live stream of patches for a block.
+
+        Yields:
+            (version, patch_bytes_list)
+        """
         req = SubscribeRequest(block_id=block_id)  # type: ignore[attr-defined]
         for resp in self._stub.Subscribe(req):
             yield resp.version, list(resp.patch)

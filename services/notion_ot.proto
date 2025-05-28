@@ -5,10 +5,10 @@ package notion_ot;
 // The OT service for pushing ops and subscribing to patches.
 service NotionOT {
   // Apply a batch of operations and return a patch + new version.
-  rpc PushOps (OpsRequest) returns (OpsResponse);
+  rpc PushOps(OpsRequest) returns (OpsResponse);
 
   // Subscribe to a stream of patches for a given block.
-  rpc Subscribe (SubscribeRequest) returns (stream OpsResponse);
+  rpc Subscribe(SubscribeRequest) returns (stream OpsResponse);
 }
 
 // Request to push operations.
@@ -16,13 +16,13 @@ message OpsRequest {
   string block_id    = 1; // UUID of the block
   string client_id   = 2; // Who is sending
   int64 base_version = 3; // Version the client has
-  // For simplicity we encode each operation as raw bytes (e.g. Automerge-format).
+  // For simplicity we encode each operation as raw bytes.
   repeated bytes ops = 4;
 }
 
 // Response: the merged patch plus the new version.
 message OpsResponse {
-  int64 version       = 1;
+  int64 version        = 1;
   repeated bytes patch = 2;
 }
 
