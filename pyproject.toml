@@ -1,59 +1,47 @@
 [tool.poetry]
-name = "stage-0"
-version = "0.1.0"
-description = "Notion Stage-0 data spine prototype"
-authors = ["Shrey Patel <patel.shrey4@northeastern.edu>"]
+name        = "stage-0"
+version     = "0.1.0"
+description = "Notion Stage-0 data-spine prototype"
+authors     = ["Shrey Patel <patel.shrey4@northeastern.edu>"]
 
-# ✨ Tell Poetry to install the `app` package from src/app
-packages = [
-  { include = "app", from = "src" }
-]
+packages = [ { include = "app", from = "src" } ]
 
+# ─────────────────────────── main runtime deps ────────────────────────────
 [tool.poetry.dependencies]
-python = ">=3.12,<4.0"
-fastapi = "^0.115.12"
-uvicorn = { extras = ["standard"], version = "^0.30.0" }
+python                    = ">=3.12,<4.0"
+fastapi                   = "^0.115"
+uvicorn                   = { extras = ["standard"], version = "^0.30" }
 
-# Async DB + ORM
-asyncpg = "^0.29"
-sqlalchemy = { extras = ["asyncio"], version = "^2.0.40" }
-alembic    = "^1.10"                # add this
+asyncpg                   = "^0.29"
+sqlalchemy                = { extras = ["asyncio"], version = "^2.0.40" }
+alembic                   = "^1.10"
 
-# Pydantic v2
-pydantic = "^2.9.1"                # replace pydantic-settings with pydantic itself
+pydantic                  = "^2.9"
+redis                     = "^6.0"
+httpx                     = "^0.28"
 
-# Redis
-redis = "^6.0.0"
+grpcio                    = "^1.64"
+grpcio-health-checking    = "^1.64"
 
-# HTTP client
-httpx = "^0.28.1"
+fire                      = "^0.7.0"
+psycopg2-binary           = "^2.9"
+tqdm                      = "^4.67"
 
-# gRPC & CRDT stub
-grpcio = "^1.71.0"                  # add this
-grpcio-tools = "^1.71.0"            # add this
-grpcio-health-checking = "^1.71.0"
-
-# Utilities
-fire = "^0.7.0"                     # if you actually use it
-psycopg2-binary = "^2.9.10"
-tqdm = "^4.67.1"
-
+# ─────────────────────────── dev / test deps ─────────────────────────────
 [tool.poetry.group.dev.dependencies]
-pytest = ">=8.2,<9"
-pytest-asyncio = "^0.26"
-pytest-cov = "^4.0"
-pre-commit = "^3.4"
-black = "^24.3"
-isort = "^5.13"
-mypy = "^1.8"
-pyyaml = "^6.0"
-grpcio-tools = "^1.71.0"
+pytest          = ">=8.2,<9"
+pytest-asyncio   = "^0.26"
+pytest-cov       = "^4.0"
+black            = "^24.3"
+isort            = "^5.13"
+mypy             = "^1.8"
+pre-commit       = "^3.4"
+pyyaml           = "^6.0"
 
-
-[tool.poetry.group.crdt.dependencies]
-grpcio-health-checking = "^1.71.0"
+# ─────────────────────────── build-time only (compiler) ───────────────────
+[tool.poetry.group.build.dependencies]
+grpcio-tools     = "^1.64"          # protoc Python plugin
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
