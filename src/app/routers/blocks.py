@@ -100,7 +100,9 @@ async def post_block_ops(
 
     current = await fetch_block(block_id, db)
     if current is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Block not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Block not found"
+        )
 
     updated = await update_block(
         block_id=block_id,
@@ -110,7 +112,9 @@ async def post_block_ops(
     )
 
     if updated is False:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Version conflict")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Version conflict"
+        )
 
     await cache_set(_cache_key(block_id), updated)
     return OpsOut(version=version, patch=[p.decode() for p in patch])

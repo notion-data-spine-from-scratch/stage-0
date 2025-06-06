@@ -10,11 +10,14 @@ _raw_url = os.getenv(
     "postgresql://notion:notion@db:5432/notion",  # fallback *without* driver
 )
 
-# ensure we have +asyncpg
+# Normalize legacy postgres:// scheme and ensure +asyncpg driver
+if _raw_url.startswith("postgres://"):
+    _raw_url = "postgresql://" + _raw_url[len("postgres://") :]
+
 if _raw_url.startswith("postgresql://"):
     DATABASE_URL = _raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 else:
-    DATABASE_URL = _raw_url  # already has +asyncpg
+    DATABASE_URL = _raw_url  # already has +asyncpg or other driver
 
 engine: AsyncEngine = create_async_engine(
     DATABASE_URL,
