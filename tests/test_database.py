@@ -5,6 +5,8 @@ from sqlalchemy import text
 
 from app.database import engine, get_db
 
+pytestmark = pytest.mark.db
+
 
 @pytest.mark.asyncio
 async def test_can_connect_and_query():

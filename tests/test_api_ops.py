@@ -10,6 +10,8 @@ import services.notion_ot_pb2_grpc as grpc_stubs
 from app.database import AsyncSessionLocal
 from app.main import create_app
 
+pytestmark = pytest.mark.db
+
 
 @pytest.fixture(autouse=True)
 def fake_stub(monkeypatch):

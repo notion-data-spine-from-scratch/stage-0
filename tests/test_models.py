@@ -1,7 +1,10 @@
 # tests/test_models.py
 import warnings
+import pytest
 
 warnings.filterwarnings("ignore")
+
+pytestmark = pytest.mark.db
 
 
 def test_metadata_reflects_tables():

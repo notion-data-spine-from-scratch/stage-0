@@ -10,6 +10,8 @@ from sqlalchemy import text
 from app.database import AsyncSessionLocal
 from app.main import create_app
 
+pytestmark = pytest.mark.db
+
 
 @pytest.mark.asyncio
 async def test_blocks_endpoints():
