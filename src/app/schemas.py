@@ -24,3 +24,18 @@ class BlockOut(BlockIn):
     version: int
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+
+class OpsIn(BaseModel):
+    """Request payload for pushing operations."""
+
+    client_id: str
+    base_version: int
+    ops: list[str]
+
+
+class OpsOut(BaseModel):
+    """Response payload after pushing operations."""
+
+    version: int
+    patch: list[str]

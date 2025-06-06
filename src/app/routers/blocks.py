@@ -1,6 +1,7 @@
 # src/app/routers/blocks.py
 from __future__ import annotations
 
+import os
 import uuid
 from typing import Any, Dict
 
@@ -10,9 +11,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.cache import cache_get, cache_set
 from app.crud import fetch_block, insert_block, update_block
 from app.database import get_db
-from app.schemas import BlockIn, BlockOut, BlockUpdate
+from app.schemas import BlockIn, BlockOut, BlockUpdate, OpsIn, OpsOut
+from services.ot_client import OTClient
 
 router = APIRouter(prefix="/blocks", tags=["blocks"])
+
+CRDT_GRPC_ADDR = os.getenv("CRDT_GRPC_ADDR", "localhost:50051")
+_ot_client: OTClient | None = None
+
+
+def get_ot_client() -> OTClient:
+    global _ot_client
+    if _ot_client is None:
+        _ot_client = OTClient(CRDT_GRPC_ADDR)
+    return _ot_client
 
 
 def _cache_key(block_id: uuid.UUID) -> str:
@@ -69,3 +81,36 @@ async def patch_block(
     # Refresh cache
     await cache_set(_cache_key(block_id), updated)
     return updated  # type: ignore[return-value]
+
+
+@router.post("/{block_id}/ops", response_model=OpsOut)
+async def post_block_ops(
+    block_id: uuid.UUID, payload: OpsIn, db: AsyncSession = Depends(get_db)
+) -> OpsOut:
+    """Push CRDT operations for a block."""
+
+    client = get_ot_client()
+    ops_bytes = [op.encode() for op in payload.ops]
+    version, patch = client.push_ops(
+        str(block_id),
+        payload.client_id,
+        base_version=payload.base_version,
+        ops=ops_bytes,
+    )
+
+    current = await fetch_block(block_id, db)
+    if current is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Block not found")
+
+    updated = await update_block(
+        block_id=block_id,
+        props=current["props"],
+        expected_version=payload.base_version,
+        session=db,
+    )
+
+    if updated is False:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Version conflict")
+
+    await cache_set(_cache_key(block_id), updated)
+    return OpsOut(version=version, patch=[p.decode() for p in patch])
