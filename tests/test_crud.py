@@ -7,7 +7,8 @@ from sqlalchemy import text
 
 from app.crud import fetch_block, insert_block, update_block
 from app.database import AsyncSessionLocal
-from app.models import metadata
+
+pytestmark = pytest.mark.db
 
 
 @pytest.mark.asyncio

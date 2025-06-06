@@ -1,12 +1,12 @@
 import pytest
-import fakeredis.aioredis
+fakeredis_aioredis = pytest.importorskip("fakeredis.aioredis")
 
 from app.cache import cache_get, cache_set
 
 
 @pytest.fixture(autouse=True)
 async def fake_redis(monkeypatch):
-    redis = fakeredis.aioredis.FakeRedis()
+    redis = fakeredis_aioredis.FakeRedis()
 
     async def _get_redis():
         return redis
