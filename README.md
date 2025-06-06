@@ -20,7 +20,9 @@ Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
    mirror the Docker Compose services (Postgres on `5433`, Redis on
    `6379`, CRDT gRPC on `50051`).
 2. `poetry install`
-3. `make up`
+3. (Optional) `./scripts/init_local_pg.sh` to spin up a local Postgres
+   cluster on port `5433` with seed data. Alternatively run `make up`
+   to start the full Docker Compose stack.
 4. `pytest`
 
 Optionally run `poetry run pre-commit run --all-files` to lint and format
