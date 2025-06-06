@@ -14,11 +14,17 @@ This repo is the **Stage 0 “Garage Prototype”** of the Notion Data-Spine pro
 
 ## Getting Started
 
+Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
+
 1. Copy `.env.example` → `.env` and fill in keys. The sample values
    mirror the Docker Compose services (Postgres on `5433`, Redis on
    `6379`, CRDT gRPC on `50051`).
-2. `docker compose -f compose/spine-only.yml up --build -d`  
-3. `pytest` passes on your local  
+2. `poetry install`
+3. `make up`
+4. `pytest`
+
+Optionally run `poetry run pre-commit run --all-files` to lint and format
+the codebase.
 
 ## Roadmap
 
