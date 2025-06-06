@@ -14,7 +14,9 @@ This repo is the **Stage 0 “Garage Prototype”** of the Notion Data-Spine pro
 
 ## Getting Started
 
-1. Copy `.env.example` → `.env` and fill in keys  
+1. Copy `.env.example` → `.env` and fill in keys. The sample values
+   mirror the Docker Compose services (Postgres on `5433`, Redis on
+   `6379`, CRDT gRPC on `50051`).
 2. `docker compose -f compose/spine-only.yml up --build -d`  
 3. `pytest` passes on your local  
 
