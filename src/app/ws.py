@@ -7,6 +7,7 @@ from collections import defaultdict
 from typing import DefaultDict, Set
 
 from aiokafka import AIOKafkaConsumer
+from aiokafka.errors import KafkaError
 from fastapi import WebSocket
 
 
@@ -44,13 +45,18 @@ manager = ConnectionManager()
 async def start_kafka_consumer() -> None:
     """Background task consuming block_patch and broadcasting patches."""
 
-    bootstrap = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+    bootstrap = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
+    if not bootstrap:
+        return
     consumer = AIOKafkaConsumer(
         "block_patch",
         bootstrap_servers=bootstrap,
         value_deserializer=lambda v: json.loads(v.decode()),
     )
-    await consumer.start()
+    try:
+        await consumer.start()
+    except KafkaError:
+        return
     try:
         async for msg in consumer:
             workspace = msg.value.get("workspace_id")

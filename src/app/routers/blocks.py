@@ -7,6 +7,7 @@ import uuid
 from typing import Any, Dict
 
 from aiokafka import AIOKafkaProducer
+from aiokafka.errors import KafkaError
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +21,7 @@ router = APIRouter(prefix="/blocks", tags=["blocks"])
 
 CRDT_GRPC_ADDR = os.getenv("CRDT_GRPC_ADDR", "localhost:50051")
 _ot_client: OTClient | None = None
-KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 _producer: AIOKafkaProducer | None = None
 
 
@@ -31,11 +32,16 @@ def get_ot_client() -> OTClient:
     return _ot_client
 
 
-async def get_producer() -> AIOKafkaProducer:
+async def get_producer() -> AIOKafkaProducer | None:
     global _producer
+    if not KAFKA_BOOTSTRAP:
+        return None
     if _producer is None:
         _producer = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP)
-        await _producer.start()
+        try:
+            await _producer.start()
+        except KafkaError:
+            return None
     return _producer
 
 
@@ -132,16 +138,20 @@ async def post_block_ops(
     await cache_set(_cache_key(block_id), updated)
 
     producer = await get_producer()
-    await producer.send_and_wait(
-        "block_patch",
-        json.dumps(
-            {
-                "block_id": str(block_id),
-                "workspace_id": str(updated["workspace_id"]),
-                "version": version,
-                "patch": [p.decode() for p in patch],
-            }
-        ).encode(),
-    )
+    if producer is not None:
+        try:
+            await producer.send_and_wait(
+                "block_patch",
+                json.dumps(
+                    {
+                        "block_id": str(block_id),
+                        "workspace_id": str(updated["workspace_id"]),
+                        "version": version,
+                        "patch": [p.decode() for p in patch],
+                    }
+                ).encode(),
+            )
+        except KafkaError:
+            pass
 
     return OpsOut(version=version, patch=[p.decode() for p in patch])
