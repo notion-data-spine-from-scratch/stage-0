@@ -19,6 +19,7 @@ alembic                   = "^1.10"
 pydantic                  = "^2.9"
 redis                     = "^6.0"
 httpx                     = "^0.28"
+aiokafka                 = "^0.10"
 
 grpcio                    = "^1.64"
 grpcio-health-checking    = "^1.64"

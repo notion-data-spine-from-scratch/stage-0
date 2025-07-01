@@ -1,10 +1,12 @@
 # src/app/routers/blocks.py
 from __future__ import annotations
 
+import json
 import os
 import uuid
 from typing import Any, Dict
 
+from aiokafka import AIOKafkaProducer
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +20,8 @@ router = APIRouter(prefix="/blocks", tags=["blocks"])
 
 CRDT_GRPC_ADDR = os.getenv("CRDT_GRPC_ADDR", "localhost:50051")
 _ot_client: OTClient | None = None
+KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+_producer: AIOKafkaProducer | None = None
 
 
 def get_ot_client() -> OTClient:
@@ -25,6 +29,14 @@ def get_ot_client() -> OTClient:
     if _ot_client is None:
         _ot_client = OTClient(CRDT_GRPC_ADDR)
     return _ot_client
+
+
+async def get_producer() -> AIOKafkaProducer:
+    global _producer
+    if _producer is None:
+        _producer = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP)
+        await _producer.start()
+    return _producer
 
 
 def _cache_key(block_id: uuid.UUID) -> str:
@@ -115,6 +127,21 @@ async def post_block_ops(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Version conflict"
         )
+    assert isinstance(updated, dict)
 
     await cache_set(_cache_key(block_id), updated)
+
+    producer = await get_producer()
+    await producer.send_and_wait(
+        "block_patch",
+        json.dumps(
+            {
+                "block_id": str(block_id),
+                "workspace_id": str(updated["workspace_id"]),
+                "version": version,
+                "patch": [p.decode() for p in patch],
+            }
+        ).encode(),
+    )
+
     return OpsOut(version=version, patch=[p.decode() for p in patch])
