@@ -86,7 +86,6 @@ services:
         condition: service_healthy
       meili:
         condition: service_started
-
   crdt:
     build:
       context: ..
