@@ -28,6 +28,9 @@ Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
 Optionally run `poetry run pre-commit run --all-files` to lint and format
 the codebase.
 
+### QA Smoke Tests
+Run `./scripts/qa_smoke_test.sh` to rebuild images, start services, run tests and verify the health endpoints with a short load test.
+
 ## Roadmap
 
 We’re tracking every commit-level task in the **Stage-0** Project board.  
