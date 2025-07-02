@@ -61,7 +61,6 @@ services:
       - "9092:9092"
     depends_on:
       - zookeeper
-
   meili:
     image: getmeili/meilisearch:v1.8
     environment:
