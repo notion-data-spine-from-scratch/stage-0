@@ -61,7 +61,31 @@ services:
       - "9092:9092"
     depends_on:
       - zookeeper
+  meili:
+    image: getmeili/meilisearch:v1.8
+    environment:
+      MEILI_MASTER_KEY: masterKey
+    ports:
+      - "7700:7700"
 
+  search-worker:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: ["python", "-m", "search_worker.worker"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://notion:notion@db:5432/notion
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MEILI_URL: http://meili:7700
+      MEILI_MASTER_KEY: masterKey
+    depends_on:
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      meili:
+        condition: service_started
   crdt:
     build:
       context: ..

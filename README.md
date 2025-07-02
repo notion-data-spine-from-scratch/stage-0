@@ -31,7 +31,6 @@ the codebase.
 ### QA Smoke Tests
 Run `./scripts/qa_smoke_test.sh` to rebuild images, start services, run tests and verify the health endpoints with a short load test.
 
-
 ## Roadmap
 
 We’re tracking every commit-level task in the **Stage-0** Project board.  
