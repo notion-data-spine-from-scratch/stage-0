@@ -15,10 +15,20 @@ import httpx
 import websockets
 from sqlalchemy import text
 
-from app.database import AsyncSessionLocal
+# -------------------------------------------------------------------------
+# Environment defaults
+# -------------------------------------------------------------------------
+
+# If run from the host, fall back to the compose-exposed Postgres port.
+if "DATABASE_URL" not in os.environ:
+    os.environ["DATABASE_URL"] = (
+        "postgresql+asyncpg://notion:notion@localhost:5433/notion"
+    )
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 WS_URL = os.getenv("WS_URL", "ws://localhost:8000/ws")
+
+from app.database import AsyncSessionLocal  # noqa: E402  (after env tweak)
 
 
 async def seed_workspace() -> uuid.UUID:
@@ -55,10 +65,18 @@ async def run_bench() -> None:
     workspace_id = await seed_workspace()
 
     async with httpx.AsyncClient(base_url=API_URL) as client:
-        # Health check
-        resp = await client.get("/health")
-        resp.raise_for_status()
+        # Wait up to ten seconds for the API to be reachable
+        for _ in range(10):
+            try:
+                resp = await client.get("/health")
+                resp.raise_for_status()
+                break
+            except (httpx.RequestError, httpx.HTTPStatusError):
+                await asyncio.sleep(1)
+        else:
+            raise RuntimeError("API never became healthy")
 
+        # Create a block
         block_payload = {
             "parent_id": None,
             "workspace_id": str(workspace_id),
@@ -69,12 +87,14 @@ async def run_bench() -> None:
         post.raise_for_status()
         block_id = post.json()["id"]
 
+        # Patch it
         patch = await client.patch(
             f"/blocks/{block_id}",
             json={"props": {"bench": 2}, "version": 1},
         )
         patch.raise_for_status()
 
+        # WebSocket round-trip
         async with websockets.connect(f"{WS_URL}/{workspace_id}") as ws:
             ops_payload = {
                 "client_id": "bench",

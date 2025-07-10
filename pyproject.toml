@@ -40,6 +40,7 @@ isort            = "^5.13"
 mypy             = "^1.8"
 pre-commit       = "^3.4"
 pyyaml           = "^6.0"
+ruff             = "^0.4"
 
 # ─────────────────────────── build-time only (compiler) ───────────────────
 [tool.poetry.group.build.dependencies]

@@ -12,9 +12,18 @@ API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 async def main() -> None:
     async with httpx.AsyncClient(base_url=API_URL) as client:
-        resp = await client.get("/health")
-        resp.raise_for_status()
+        # Wait (max 10 s) for the API container to report healthy
+        for _ in range(10):
+            try:
+                resp = await client.get("/health")
+                resp.raise_for_status()
+                break
+            except (httpx.RequestError, httpx.HTTPStatusError):
+                await asyncio.sleep(1)
+        else:
+            raise RuntimeError("API never became healthy")
 
+        # Basic CRUD round-trip
         ws = uuid.uuid4()
         block = await client.post(
             "/blocks/",

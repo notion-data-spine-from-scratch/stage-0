@@ -15,12 +15,14 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
 # Copy lockfiles to leverage cache
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies only (skip the project itself)
+# Install all deps (main + dev) so pytest, ruff, etc. are available
 RUN poetry config virtualenvs.create false \
- && poetry install --no-interaction --no-ansi --only main --no-root
+ && poetry install --no-interaction --no-ansi --with dev --no-root
 
-# Copy all source
-COPY src/ ./src/
+# Copy application code and services
+COPY src/    ./src/
+COPY services/ ./services/
+COPY tests/    ./tests/
 
 # ---------- Runtime stage ----------
 FROM python:3.12-slim
@@ -28,17 +30,18 @@ FROM python:3.12-slim
 # Create a non-root user
 RUN useradd --create-home appuser
 
-
 USER appuser
 WORKDIR /home/appuser/code
 
-# Copy dependencies & entrypoints
+# Bring over installed packages & tooling
 COPY --from=builder /usr/local/lib/python3.12/site-packages/ \
      /usr/local/lib/python3.12/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
-# Flatten src/app → app/
-COPY --from=builder --chown=appuser:appuser /code/src/app/. ./app/
+# Copy our FastAPI app and the gRPC services client code
+COPY --from=builder --chown=appuser:appuser /code/src/app/.      ./app/
+COPY --from=builder --chown=appuser:appuser /code/services/.     ./services/
+COPY --from=builder --chown=appuser:appuser /code/tests/.        ./tests/
 
 # Disable Python output buffering
 ENV PYTHONUNBUFFERED=1
@@ -47,4 +50,3 @@ EXPOSE 8000
 
 # Launch via Uvicorn pointing at app.main:create_app
 CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
-
