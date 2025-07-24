@@ -615,6 +615,29 @@ files = [
 ]
 
 [[package]]
+name = "fakeredis"
+version = "2.30.1"
+description = "Python implementation of redis API, can be used for testing purposes."
+optional = false
+python-versions = ">=3.7"
+groups = ["main", "dev"]
+files = [
+    {file = "fakeredis-2.30.1-py3-none-any.whl", hash = "sha256:b594a9c20aef8b94c4d923f489210ef443e4001e62ad3cd73b9a01298dcef743"},
+    {file = "fakeredis-2.30.1.tar.gz", hash = "sha256:6489f2926e39815c9bf0fce80751635e0898e333c43a767825adf101180dbc45"},
+]
+
+[package.dependencies]
+redis = {version = ">=4.3", markers = "python_version > \"3.8\""}
+sortedcontainers = ">=2,<3"
+
+[package.extras]
+bf = ["pyprobables (>=0.6)"]
+cf = ["pyprobables (>=0.6)"]
+json = ["jsonpath-ng (>=1.6,<2.0)"]
+lua = ["lupa (>=2.1,<3.0)"]
+probabilistic = ["pyprobables (>=0.6)"]
+
+[[package]]
 name = "fastapi"
 version = "0.115.12"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -1756,7 +1779,7 @@ version = "6.0.0"
 description = "Python client for Redis database and key-value store"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "redis-6.0.0-py3-none-any.whl", hash = "sha256:a2e040aee2cdd947be1fa3a32e35a956cd839cc4c1dbbe4b2cdee5b9623fd27c"},
     {file = "redis-6.0.0.tar.gz", hash = "sha256:5446780d2425b787ed89c91ddbfa1be6d32370a636c8fdb687f11b1c26c1fa88"},
@@ -1859,6 +1882,18 @@ groups = ["main"]
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
+]
+
+[[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
+optional = false
+python-versions = "*"
+groups = ["main", "dev"]
+files = [
+    {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
+    {file = "sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88"},
 ]
 
 [[package]]
@@ -2359,4 +2394,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "88bdf5898e395c0069bee325840227e8a5da2b6fa911e10f2022b887339e4c15"
+content-hash = "7c409734fe175459a27fb0fba98f8c696f4788ab3d31184cca0ea90a03771b02"

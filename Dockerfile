@@ -20,9 +20,12 @@ RUN poetry config virtualenvs.create false \
  && poetry install --no-interaction --no-ansi --with dev --no-root
 
 # Copy application code and services
-COPY src/    ./src/
+COPY src/      ./src/
 COPY services/ ./services/
 COPY tests/    ./tests/
+
+# Copy pytest config so the container sees your markers
+COPY pytest.ini ./pytest.ini
 
 # ---------- Runtime stage ----------
 FROM python:3.12-slim
@@ -42,6 +45,9 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY --from=builder --chown=appuser:appuser /code/src/app/.      ./app/
 COPY --from=builder --chown=appuser:appuser /code/services/.     ./services/
 COPY --from=builder --chown=appuser:appuser /code/tests/.        ./tests/
+
+# Also bring in pytest.ini for marker registration
+COPY --from=builder --chown=appuser:appuser /code/pytest.ini     ./pytest.ini
 
 # Disable Python output buffering
 ENV PYTHONUNBUFFERED=1
