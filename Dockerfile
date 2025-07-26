@@ -23,6 +23,7 @@ RUN poetry config virtualenvs.create false \
 COPY src/      ./src/
 COPY services/ ./services/
 COPY tests/    ./tests/
+COPY scripts/  ./scripts/
 
 # Copy pytest config so the container sees your markers
 COPY pytest.ini ./pytest.ini
