@@ -4,7 +4,10 @@ version     = "0.1.0"
 description = "Notion Stage-0 data-spine prototype"
 authors     = ["Shrey Patel <patel.shrey4@northeastern.edu>"]
 
-packages = [ { include = "app", from = "src" } ]
+packages = [
+  { include = "app", from = "src" },
+  { include = "search_worker", from = "src" }
+]
 
 # ─────────────────────────── main runtime deps ────────────────────────────
 [tool.poetry.dependencies]
