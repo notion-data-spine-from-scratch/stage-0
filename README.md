@@ -23,6 +23,8 @@ Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
 3. (Optional) `./scripts/init_local_pg.sh` to spin up a local Postgres
    cluster on port `5433` with seed data. Alternatively run `make up`
    to start the full Docker Compose stack.
+   The API container now seeds the database automatically on first start
+   using `scripts/seed_then_start.sh`.
 4. `pytest`
 
 Optionally run `poetry run pre-commit run --all-files` to lint and format
