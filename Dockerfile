@@ -42,9 +42,10 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages/ \
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 # Copy our FastAPI app and the gRPC services client code
-COPY --from=builder --chown=appuser:appuser /code/src/app/.      ./app/
-COPY --from=builder --chown=appuser:appuser /code/services/.     ./services/
-COPY --from=builder --chown=appuser:appuser /code/tests/.        ./tests/
+COPY --from=builder --chown=appuser:appuser /code/src/app/.          ./app/
+COPY --from=builder --chown=appuser:appuser /code/src/search_worker/. ./search_worker/
+COPY --from=builder --chown=appuser:appuser /code/services/.         ./services/
+COPY --from=builder --chown=appuser:appuser /code/tests/.            ./tests/
 
 # Also bring in pytest.ini for marker registration
 COPY --from=builder --chown=appuser:appuser /code/pytest.ini     ./pytest.ini

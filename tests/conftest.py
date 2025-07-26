@@ -29,6 +29,6 @@ def _db_available() -> bool:
 DB_AVAILABLE = _db_available()
 
 
-# def pytest_runtest_setup(item: pytest.Item) -> None:  # pragma: no cover - hook
-#     if "db" in item.keywords and not DB_AVAILABLE:
-#         pytest.skip("PostgreSQL not available", allow_module_level=True)
+def pytest_runtest_setup(item: pytest.Item) -> None:  # pragma: no cover - hook
+    if "db" in item.keywords and not DB_AVAILABLE:
+        pytest.skip("PostgreSQL not available", allow_module_level=True)
