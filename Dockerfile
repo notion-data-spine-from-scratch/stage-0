@@ -23,6 +23,7 @@ RUN poetry config virtualenvs.create false \
 COPY src/      ./src/
 COPY services/ ./services/
 COPY tests/    ./tests/
+COPY scripts/  ./scripts/
 
 # Copy pytest config so the container sees your markers
 COPY pytest.ini ./pytest.ini
@@ -46,6 +47,7 @@ COPY --from=builder --chown=appuser:appuser /code/src/app/.          ./app/
 COPY --from=builder --chown=appuser:appuser /code/src/search_worker/. ./search_worker/
 COPY --from=builder --chown=appuser:appuser /code/services/.         ./services/
 COPY --from=builder --chown=appuser:appuser /code/tests/.            ./tests/
+COPY --from=builder --chown=appuser:appuser /code/scripts/.          ./scripts/
 
 # Also bring in pytest.ini for marker registration
 COPY --from=builder --chown=appuser:appuser /code/pytest.ini     ./pytest.ini
@@ -55,5 +57,5 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-# Launch via Uvicorn pointing at app.main:create_app
-CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+# Start up by seeding the database then launching Uvicorn
+CMD ["./scripts/seed_then_start.sh"]

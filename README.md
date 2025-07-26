@@ -25,6 +25,8 @@ Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
    to start the full Docker Compose stack.
    If Kafka or Zookeeper fail to start, run
    `docker compose -f compose/full.yml down -v` to clear old volumes.
+   The API container now seeds the database automatically on first start
+   using `scripts/seed_then_start.sh`.
 4. `pytest`
 
 Optionally run `poetry run pre-commit run --all-files` to lint and format
