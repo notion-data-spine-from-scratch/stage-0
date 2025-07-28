@@ -26,9 +26,8 @@ Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
    If Kafka or Zookeeper fail to start, run
    `docker compose -f compose/full.yml down -v` to clear old volumes.
    The search-worker relies on `PYTHONPATH` being `/home/appuser/code`; this is
-   set in the Compose file.
-   The API container now seeds the database automatically on first start
-   using `scripts/seed_then_start.sh`.
+   set in the Compose file. Seed data is no longer generated automatically.
+   Run `make seed` after `make up` if you want sample records in Postgres.
 4. `poetry run pytest`
 
 Optionally run `poetry run pre-commit run --all-files` to lint and format
