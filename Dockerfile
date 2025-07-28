@@ -17,7 +17,7 @@ COPY pyproject.toml poetry.lock ./
 
 # Install all deps (main + dev) so pytest, ruff, etc. are available
 RUN poetry config virtualenvs.create false \
- && poetry install --no-interaction --no-ansi --with dev --no-root
+ && poetry install --no-interaction --no-ansi --with dev
 
 # Copy application code and services
 COPY src/      ./src/
@@ -54,8 +54,9 @@ COPY --from=builder --chown=appuser:appuser /code/pytest.ini     ./pytest.ini
 
 # Disable Python output buffering
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/home/appuser/code
 
 EXPOSE 8000
 
-# Start up by seeding the database then launching Uvicorn
-CMD ["./scripts/seed_then_start.sh"]
+# Launch Uvicorn directly; run scripts/generate_seed.py manually if needed
+CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
