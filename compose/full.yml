@@ -86,6 +86,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       MEILI_URL: http://meili:7700
       MEILI_MASTER_KEY: masterKey
+      PYTHONPATH: /home/appuser/code
     depends_on:
       kafka:
         condition: service_started

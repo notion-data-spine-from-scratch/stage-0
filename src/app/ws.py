@@ -56,6 +56,7 @@ async def start_kafka_consumer() -> None:
     try:
         await consumer.start()
     except KafkaError:
+        await consumer.stop()
         return
     try:
         async for msg in consumer:
