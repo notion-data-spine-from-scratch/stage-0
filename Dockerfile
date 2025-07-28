@@ -17,7 +17,7 @@ COPY pyproject.toml poetry.lock ./
 
 # Install all deps (main + dev) so pytest, ruff, etc. are available
 RUN poetry config virtualenvs.create false \
- && poetry install --no-interaction --no-ansi --with dev
+ && poetry install --no-interaction --no-ansi --with dev --no-root
 
 # Copy application code and services
 COPY src/      ./src/
