@@ -23,6 +23,8 @@ Requires **Python&nbsp;3.12** with [Poetry](https://python-poetry.org/).
 3. (Optional) `./scripts/init_local_pg.sh` to spin up a local Postgres
    cluster on port `5433` with seed data. Alternatively run `make up`
    to start the full Docker Compose stack.
+   If Kafka or Zookeeper fail to start, run
+   `docker compose -f compose/full.yml down -v` to clear old volumes.
    The API container now seeds the database automatically on first start
    using `scripts/seed_then_start.sh`.
 4. `pytest`
