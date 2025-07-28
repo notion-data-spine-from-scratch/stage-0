@@ -7,6 +7,8 @@ from fastapi import FastAPI
 
 from app.routers.blocks import router as blocks_router
 from app.routers.ws import router as ws_router
+from app.routers.search import router as search_router
+from prometheus_fastapi_instrumentator import Instrumentator
 from app.ws import start_kafka_consumer
 
 
@@ -26,6 +28,9 @@ app = FastAPI(
 # register API routers
 app.include_router(blocks_router, tags=["blocks"])
 app.include_router(ws_router, tags=["ws"])
+app.include_router(search_router, tags=["search"])
+
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/health")

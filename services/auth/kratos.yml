@@ -1,0 +1,10 @@
+serve:
+  public:
+    base_url: http://kratos:4433/
+  admin:
+    base_url: http://kratos:4434/
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/identity.schema.json
