@@ -35,6 +35,17 @@ jobs:
       - name: Start services
         run: docker compose -f compose/${{ matrix.profile }}.yml up -d
 
+      - name: Wait for API
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:8000/health >/dev/null; then
+              echo "API is up" && break
+            fi
+            echo "Waiting for API..."
+            sleep 1
+          done
+          curl -fsS http://localhost:8000/health
+
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}
