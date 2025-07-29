@@ -31,7 +31,7 @@ docker compose -f "$COMPOSE_SPINE" run --rm \
 # 5. gRPC service health
 printf '\n[5/7] Checking gRPC service health...\n'
 docker compose -f "$COMPOSE_FULL" exec crdt \
-    grpc_health_probe -addr localhost:50051
+    python /usr/local/bin/healthcheck.py
 
 # 6. HTTP API health
 printf '\n[6/7] Checking HTTP API health...\n'
