@@ -1,0 +1,13 @@
+{
+  "dashboard": {
+    "title": "Stage0 API",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "p95 latency",
+        "targets": [],
+        "datasource": "Prometheus"
+      }
+    ]
+  }
+}

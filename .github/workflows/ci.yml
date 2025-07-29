@@ -8,6 +8,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile: [spine-only, full]
 
     steps:
       - uses: actions/checkout@v4
@@ -26,14 +29,20 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
+      - name: Build image
+        run: docker build -t stage0-api .
+
       - name: Start services
-        run: docker compose -f compose/spine-only.yml up -d
+        run: docker compose -f compose/${{ matrix.profile }}.yml up -d
 
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: poetry run pytest
 
+      - name: Locust smoke test
+        run: poetry run locust -f tests/locustfile.py --headless -u 1 -r 1 -t 10s
+
       - name: Shutdown services
         if: always()
-        run: docker compose -f compose/spine-only.yml down
+        run: docker compose -f compose/${{ matrix.profile }}.yml down

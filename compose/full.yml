@@ -62,6 +62,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
     ports:
       - "9092:9092"
     depends_on:
@@ -92,6 +93,56 @@ services:
         condition: service_healthy
       meili:
         condition: service_started
+
+  asset-proxy:
+    build:
+      context: ../services/asset-proxy
+    ports:
+      - "8081:8080"
+    depends_on:
+      - localstack
+
+  kratos:
+    image: oryd/kratos:v1.1.0
+    volumes:
+      - ../services/auth:/etc/config:ro
+    command: ["serve", "--dev", "/etc/config/kratos.yml"]
+    ports:
+      - "4433:4433"
+      - "4434:4434"
+
+  stripe-mock:
+    image: stripe/stripe-mock:v0.187.0
+    ports:
+      - "12111:12111"
+
+  localstack:
+    image: localstack/localstack:3
+    environment:
+      - SERVICES=s3
+    ports:
+      - "4566:4566"
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    volumes:
+      - ../services/metrics/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    environment:
+      DATA_SOURCE_NAME: postgresql://notion:notion@db:5432/postgres?sslmode=disable
+    ports:
+      - "9187:9187"
   crdt:
     build:
       context: ..
