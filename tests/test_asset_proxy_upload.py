@@ -1,21 +1,29 @@
 import json
 import os
+import shutil
 import subprocess
 
 import jwt
+import pytest
 
 JWT_SECRET = "secret"
+
+
+LUAJIT = shutil.which("luajit") or shutil.which("lua") or shutil.which("lua5.4")
 
 
 def run_lua(token=None):
     env = os.environ.copy()
     env["JWT_SECRET"] = JWT_SECRET
     env["STUB_JWT"] = "1"
+    env["STUB_CJSON"] = "1"
     env["PRESIGN_PATH"] = "services/asset-proxy/presign.py"
     if token:
         env["TOKEN"] = token
+    if LUAJIT is None:
+        pytest.skip("Lua interpreter not available")
     result = subprocess.run(
-        ["luajit", "tests/run_upload.lua"], capture_output=True, text=True, env=env
+        [LUAJIT, "tests/run_upload.lua"], capture_output=True, text=True, env=env
     )
     return result.stdout.strip()
 

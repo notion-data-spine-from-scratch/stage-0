@@ -13,6 +13,24 @@ if os.getenv("STUB_JWT") then
   }
 end
 
+if os.getenv("STUB_CJSON") then
+  package.loaded["cjson"] = {
+    encode = function(tbl)
+      local parts = {"{"}
+      local first = true
+      for k, v in pairs(tbl) do
+        if not first then
+          parts[#parts + 1] = ","
+        end
+        first = false
+        parts[#parts + 1] = string.format('"%s":"%s"', k, v)
+      end
+      parts[#parts + 1] = "}"
+      return table.concat(parts)
+    end,
+  }
+end
+
 ngx = {
   req = {
     read_body = function() end,
