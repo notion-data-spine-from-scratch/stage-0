@@ -16,14 +16,14 @@ jobs:
         run: npm ci
         working-directory: e2e
       - name: Install Cypress system dependencies
-        run: sudo apt-get update && sudo apt-get install -y xvfb libatk1.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 libx11-xcb1
+        run: sudo apt-get update && sudo apt-get install -y xvfb libatk1.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 libx11-xcb1
       - name: Start stack
         run: docker compose -f compose/full.yml up -d
       - name: Run Cypress
         uses: cypress-io/github-action@v6
         with:
           working-directory: e2e
-          command: xvfb-run -a npm test
+          command: npm test
       - name: Stop stack
         if: always()
         run: docker compose -f compose/full.yml down
