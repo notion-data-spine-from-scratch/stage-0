@@ -38,7 +38,7 @@ printf '\n[6/7] Checking HTTP API health...\n'
 curl -sf http://localhost:8000/health
 
 # 7. Load / smoke testing
-printf '\n[7/7] Running load test...\n'
-hey -z 30s -c 10 -q 20 "http://localhost:8000/blocks/$(uuidgen)"
+printf '\n[7/7] Running load test with Locust...\n'
+poetry run locust -f tests/locustfile.py --headless -u 1 -r 1 -t 10s
 
 printf '\nQA smoke tests complete.\n'
